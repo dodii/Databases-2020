@@ -1,0 +1,13 @@
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+	path('', views.index, name='index'),
+	path('champ_output/', views.champ_output, name='champ_output'),
+	path('comb_output/', views.comb_output, name='comb_output'),
+	path('mayosql/', views.mayosql, name='mayosql/'),
+	path('mayo/', views.mayo, name='mayo'),
+	path('mes/', views.mes, name='mes'),
+]
+

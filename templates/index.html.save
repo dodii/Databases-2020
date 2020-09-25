@@ -1,0 +1,13 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<title>CC3201 Group 23 Project Homepage</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+
+<body>	
+	<h1 style="text-align:center"> Welcome to the database of group 23!</h1>
+	
+</body>
+</html>

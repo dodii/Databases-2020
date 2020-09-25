@@ -1,0 +1,139 @@
+from django.shortcuts import render
+from django.http import HttpResponse
+from prueba.models import Mes
+from django.db import connection
+from collections import namedtuple
+from django.shortcuts import render
+from .forms import NombreMesForm
+from .forms import EloForm
+
+
+# Create your views here.
+def index(request):
+        champ_form = EloForm(prefix="champ_form")
+        winrate_form = EloForm(prefix="winrate_form")
+        item_form = EloForm(prefix="item_form")
+        return render(request, "index.html", {'champ_form': champ_form, 'winrate_form': winrate_form, 
+                        'item_form': item_form})
+
+def champ_output(request):
+        if request.method == 'POST':
+                champ_form = EloForm(request.POST, prefix="champ_form")
+                if champ_form.is_valid():
+                        #aqui van los campeones mas populares con la consulta
+                        #adecuada, consultar_champ con el elo del post
+                        elo = champ_form.cleaned_data['elo']
+                        #sql_res = consultar_champs(elo)
+                        #entregar un array con el output
+                        res = 'champs mas populares del elo '+ elo +' van aca'
+                        return render(request, "champ_output.html", {'res_champs': res})
+                else:
+                        res = 'No existe ese elo para consultar en la base'
+                        return render(request, "champ_output.html", {'res_champs': res})
+        else:
+                champ_form = EloForm(prefix="champ_form")
+                comb_form = EloForm(prefix="comb_form")
+                third_form = EloForm(prefix="third_form")
+        return render(request, "index.html", {'champ_form': champ_form, 'winrate_form': winrate_form, 
+                        'item_form': item_form})
+
+def winrate_output(request):
+        if request.method == 'POST':
+                winrate_form = EloForm(request.POST, prefix="winrate_form")
+                if winrate_form.is_valid():
+                        #aqui van los champs con mayor winrate segun la consulta adecuada
+                        elo = winrate_form.cleaned_data['elo']
+                        #sql_res = consultar_winrate(elo)
+                        #entregar un array con el output
+                        res = 'champs con mayor winrate del elo '+ elo + '  van aca'
+                        return render(request, "winrate_output.html", {'winrate_res': res})
+                else:
+                        res = 'Ese elo no existe en la base'
+                        return render(request, "winrate_output.html", {'winrate_res': res})
+        else:
+                champ_form = EloForm(prefix="champ_form")
+                winrate_form = EloForm(prefix="winrate_form")
+                item_form = EloForm(prefix="item_form")
+        return render(request, "index.html", {'champ_form': champ_form, 'winrate_form': winrate_form, 
+                'item_form': item_form})
+
+def item_output(request):
+	if request.method == 'POST':
+		item_form = EloForm(request.POST, prefix="item_form")
+		if item_form.is_valid():
+			#aqui van los items mas usados segun la consulta
+			elo = item_form.cleaned_data['elo']
+			#sql_res = consultar_item(elo)
+			#entregar array output
+			res = 'items mas usados en el elo '+ elo + ' van aca'
+			return render(request, "item_output.html", {'item_res': res})
+	else:
+		champ_form = EloForm(prefix="champ_form")
+		winrate_form = EloForm(prefix="winrate_form")
+		item_form = EloForm(prefix="item_form")
+	return render(request, "index.html", {'champ_form': champ_form, 'winrate_form': winrate_form, 
+		'item_form': item_form})
+
+#def consultar_champs(elo):
+#	with connection.cursor() as cursor:
+#		cursor.execute("SELECT u_champion, COUNT(*) AS cantidad FROM tft.uses WHERE 
+#				g_id IN (SELECT gameId FROM tft.game WHERE division = %s) 
+#				GROUP BY u_champion ORDER BY cantidad DESC", [elo])
+#		results = namedtuplefetchall(cursor)
+#	return results
+
+#def consultar_winrate(elo):
+#	with connection.cursor() as cursor:
+#		cursor.execute("SELECT u_champion, COUNT(*) AS cantidad FROM tft.uses WHERE 
+#				g_id IN (SELECT gameId FROM tft.game WHERE division = %s)
+#				AND p_position = 1 GROUP BY u_champion ORDER BY cantidad DESC", [elo])
+#		results = namedtuplefetchall(cursor)
+#	return results
+
+#def consultar_items(elo):
+#	with connection.cursor() as cursor:
+#		cursor.execute("SELECT i_id, COUNT(*) AS cantidad FROM tft.equipped, game WHERE 
+#				g_id = gameId AND i_id <> 0 AND division = %s GROUP BY i_id 
+#				ORDER BY cantidad DESC", [elo])
+#		results = namedtuplefetchall(cursor)
+#	return results
+
+def mayo(request):
+        return HttpResponse("El numero del mes 'Mayo' es "+
+                        str(Mes.objects.filter(nombre='Mayo')[:1].
+                        get().numero))
+
+def mayosql(request):
+        return HttpResponse("EL numero del mes 'Mayo' es "+ str(consultar_mes('Mayo')[0].numero))
+
+def mes(request):
+        #si es POST, tenemos una peticion del usuario
+        if request.method == 'POST':
+                #create a form instance and populate it with data from the request
+                form = NombreMesForm(request.POST)
+                #verifica que sea valido:
+                if form.is_valid():
+                        nombre_mes = form.cleaned_data['nombre_mes']
+                        sql_res = consultar_mes(nombre_mes)
+                        if sql_res:
+                                num_mes = consultar_mes(nombre_mes)[0].numero
+                                res = 'El numero del mes '+nombre_mes+' es '+str(num_mes)
+                        else:
+                                res = 'El mes '+nombre_mes+' no esta en la tabla'
+                        return render(request, 'mes_form.html', {'mes_form':form, 'resultados': res})
+        #si es GET (o algo diferente) crearemos un formulario en blanco
+        else:
+                form = NombreMesForm()
+        return render(request, 'mes_form.html', {'mes_form': form})
+
+def consultar_mes(mes):
+        with connection.cursor() as cursor:
+                cursor.execute("SELECT numero FROM test.mes WHERE nombre = %s", [mes])
+                results = namedtuplefetchall(cursor)
+        return results
+
+def namedtuplefetchall(cursor):
+        "Return all rows from a cursor as a namedtuple"
+        desc = cursor.description
+        nt_result = namedtuple('Result', [col[0] for col in desc])
+        return [nt_result(*row) for row in cursor.fetchall()]

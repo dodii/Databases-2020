@@ -1,0 +1,9 @@
+from django import forms
+
+class NombreMesForm(forms.Form):
+	nombre_mes = forms.CharField(label='Nombre del mes', max_length=100)
+
+CHOICES=[
+
+class EloForm(forms.Form):
+	elo = forms.C

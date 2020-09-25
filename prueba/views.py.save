@@ -1,0 +1,65 @@
+from django.shortcuts import render
+from django.http import HttpResponse
+from prueba.models import Mes
+from django.db import connection
+from collections import namedtuple
+from django.shortcuts import render
+from .forms import NombreMesForm
+
+# Create your views here.
+def index(request):
+	return render(request, "index.html")
+
+def champ_output(request):
+	if request.method == 'POST':
+		return render(request, 'champ_output.html')
+	else:
+		return render(request, "index.html")
+
+def comb_output(request):
+        if request.method == 'POST':
+		return render(request, 'comb_output.html')
+        else:
+                return render(request, "index.html")
+
+def mayo(request):
+	return HttpResponse("El numero del mes 'Mayo' es "+
+			str(Mes.objects.filter(nombre='Mayo')[:1].
+			get().numero))
+
+def mayosql(request):
+	return HttpResponse("EL numero del mes 'Mayo' es "+ str(consultar_mes('Mayo')[0].numero))
+
+def mes(request):
+	#si es POST, tenemos una peticion del usuario
+	if request.method == 'POST':
+		#create a form instance and populate it with data from the request
+		form = NombreMesForm(request.POST)
+		#verifica que sea valido:
+		if form.is_valid():
+			nombre_mes = form.cleaned_data['nombre_mes']
+			sql_res = consultar_mes(nombre_mes)
+			if sql_res:
+				num_mes = consultar_mes(nombre_mes)[0].numero
+				res = 'El numero del mes '+nombre_mes+' es '+str(num_mes)
+			else:
+				res = 'El mes '+nombre_mes+' no esta en la tabla'
+			return render(request, 'mes_form.html', {'mes_form':form, 'resultados': res})
+	#si es GET (o algo diferente) crearemos un formulario en blanco
+	else:
+		form = NombreMesForm()
+	return render(request, 'mes_form.html', {'mes_form': form})
+
+def consultar_mes(mes):
+	with connection.cursor() as cursor:
+		cursor.execute("SELECT numero FROM test.mes WHERE nombre = %s", [mes])
+		results = namedtuplefetchall(cursor)
+	return results
+
+def namedtuplefetchall(cursor):
+	"Return all rows from a cursor as a namedtuple"
+	desc = cursor.description
+	nt_result = namedtuple('Result', [col[0] for col in desc])
+	return [nt_result(*row) for row in cursor.fetchall()]
+
+

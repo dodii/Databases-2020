@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<title>CC3201 Group 23 Project Homepage</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+
+<body>	
+	<h1 style="text-align:center"> Aplicacion web de la base de datos del grupo 23</h1>
+	<form action="" method="post" target="_blank">
+	{%csrf_token %}
+	  <p> 
+	    Campeones mas populares segun elo: <br>
+	    <label><input type="radio" name="elo" value="challenger" required> Challenger</label><br>
+	    <label><input type="radio" name="elo" value="grandmaster"> Grandmaster</label><br>
+	    <label><input type="radio" name="elo" value="master"> Master</label><br>
+	    <label><input type="radio" name="elo" value="diamond"> Diamond</label><br>
+	    <label><input type="radio" name="elo" value="platinum"> Platinum</label><br>
+	  </p>
+	  <p>
+	    <input type="submit" value="Submit">
+	    <input type="reset" value="Vaciar formulario">
+	  </p>
+	</form>
+
+	<form action="comb_output.html" method="post" target="_blank">
+	{%csrf_token %} 
+          <p>   
+            Combinaciones mas populares segun elo: <br>
+            <label><input type="radio" name="elo" value="challenger" required> Challenger</label><br>
+            <label><input type="radio" name="elo" value="grandmaster"> Grandmaster</label><br>
+            <label><input type="radio" name="elo" value="master"> Master</label><br>
+            <label><input type="radio" name="elo" value="diamond"> Diamond</label><br>
+            <label><input type="radio" name="elo" value="platinum"> Platinum</label><br>
+          </p>
+          <p>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Vaciar formulario">
+          </p>
+        </form>
+	
+	<form action="" method="post" target="_blank">
+        {%csrf_token %} 
+          <p>
+            Otra consulta segun elo: <br>
+            <label><input type="radio" name="elo" value="challenger" required> Challenger</label><br>
+            <label><input type="radio" name="elo" value="grandmaster"> Grandmaster</label><br>
+            <label><input type="radio" name="elo" value="master"> Master</label><br>
+            <label><input type="radio" name="elo" value="diamond"> Diamond</label><br>
+            <label><input type="radio" name="elo" value="platinum"> Platinum</label><br>
+          </p>
+          <p>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Vaciar formulario">
+          </p>
+        </form>
+</body>
+</html>

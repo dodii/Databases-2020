@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<title>CC3201 Group 23 Project Homepage</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+
+<body>	
+	<h1 style="text-align:center"> Aplicacion web de la base de datos del grupo 23</h1>
+	<form action="champ_output.html" method="post" target="_blank">
+	{%csrf_token %}
+	  <p> 
+	    Campeones mas populares segun elo: <br>
+	    {{ champ_form }}
+	    <input type="submit" value="Submit">
+	    <input type="reset" value="Vaciar formulario">
+	  </p>
+	</form>
+
+	<form action="winrate_output.html" method="post" target="_blank">
+	{%csrf_token %} 
+          <p>   
+            Campeones con mayor winrate segun elo: <br>
+            {{ winrate_form }}
+            <input type="submit" value="Submit">
+            <input type="reset" value="Vaciar formulario">
+          </p>
+        </form>
+
+	<form action="item_output.html" method="post" target="_blank">
+        {%csrf_token %} 
+          <p>
+            Items mas usados segun elo: <br>
+            {{ item_form }}
+            <input type="submit" value="Submit">
+            <input type="reset" value="Vaciar formulario">
+          </p>
+        </form>
+
+	<form action="popular_item_output.html" method="post" target="_blank">
+	{%csrf_token %}
+	  <p>
+	    Item recomendado del campeon: <br>
+	    {{ popular_item_form }}
+	    <input type="submit" value="Submit">
+	  </p>
+	</form>	
+</body>
+</html>
